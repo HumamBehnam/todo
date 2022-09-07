@@ -19,6 +19,8 @@ import androidx.compose.material.Text
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
@@ -31,15 +33,21 @@ import androidx.hilt.navigation.compose.hiltViewModel
 @OptIn(ExperimentalAnimationApi::class)
 @Composable
 fun ListScreen(
-    listViewModel: ListViewModel = hiltViewModel()
+    listViewModel: ListViewModel = hiltViewModel(),
+    navigateToEditTask: () -> Unit,
 ){
 
-    val todoList = listViewModel.taskList
+    val allTasks = listViewModel.allTasks.observeAsState().value
+    val searchResults = listViewModel.searchResults.observeAsState().value
+
+
 
     Scaffold(
         floatingActionButton = {
             FloatingActionButton(
-                onClick = {},
+                onClick = {
+                    navigateToEditTask()
+                          },
                 shape = RoundedCornerShape(15.dp),
                 backgroundColor = Color.DarkGray,
                 content = {
@@ -54,13 +62,26 @@ fun ListScreen(
                 verticalArrangement = Arrangement.spacedBy(5.dp)
             ){
 
-                itemsIndexed(todoList){ index, task ->
-                    todoCard(
-                        title = task.title,
-                        status = task.status,
-                        deleteTask = {listViewModel.deleteTask(index)}
-                    )
-                }
+
+               allTasks?.let {
+                   itemsIndexed(it) { index, task ->
+                       todoCard(
+                           title = task.title,
+                           status = task.status,
+                           deleteTask = {}
+                       )
+                   }
+               }
+
+                //itemsIndexed(todoList){ index, task ->
+                //    todoCard(
+                //        title = task.title,
+                //        status = task.status,
+                //        deleteTask = {listViewModel.deleteTask(index)}
+                //    )
+                //}
+
+
 
             }
 
