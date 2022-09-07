@@ -20,9 +20,9 @@ class TaskRepository(private val taskDao: TaskDao) {
         }
     }
 
-    suspend fun deleteTask(name: String) {
+    suspend fun deleteTask(id: Int) {
         withContext(Dispatchers.IO){
-            taskDao.deleteTask(name)
+            taskDao.deleteTask(id)
         }
     }
 

@@ -15,8 +15,8 @@ interface TaskDao {
     @Query("SELECT * FROM tasks WHERE taskTitle = :title")
     fun findTask(title: String): List<Task>
 
-    @Query("DELETE FROM tasks WHERE taskTitle = :title")
-    fun deleteTask(title: String)
+    @Query("DELETE FROM tasks WHERE taskId = :id")
+    fun deleteTask(id: Int)
 
     @Query("SELECT * FROM tasks")
     fun getAllTasks(): LiveData<List<Task>>

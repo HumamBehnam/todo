@@ -13,13 +13,10 @@ import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 @HiltViewModel
-class ListViewModel @Inject constructor(@ApplicationContext context: Context) : ViewModel(){
-
-
-
-
-
-
+class ListViewModel @Inject constructor(
+    @ApplicationContext context: Context,
+    var appState: AppState,
+) : ViewModel(){
 
 
     val allTasks: LiveData<List<Task>>
@@ -47,9 +44,9 @@ class ListViewModel @Inject constructor(@ApplicationContext context: Context) : 
         }
     }
 
-    fun deleteTask(name: String) {
+    fun deleteTask(id: Int) {
         viewModelScope.launch {
-            repository.deleteTask(name)
+            repository.deleteTask(id)
         }
 
     }

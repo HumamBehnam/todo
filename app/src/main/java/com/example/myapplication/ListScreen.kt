@@ -2,10 +2,12 @@ package com.example.myapplication
 
 import androidx.compose.animation.ExperimentalAnimationApi
 import androidx.compose.foundation.border
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.itemsIndexed
@@ -29,6 +31,9 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
+import com.example.myapplication.ui.theme.BorderColor
+import com.example.myapplication.ui.theme.CardBackground
+import com.example.myapplication.ui.theme.Torquise
 
 @OptIn(ExperimentalAnimationApi::class)
 @Composable
@@ -47,11 +52,18 @@ fun ListScreen(
             FloatingActionButton(
                 onClick = {
                     navigateToEditTask()
+                    //listViewModel.insertTask(Task("waow", "veeem", true))
                           },
                 shape = RoundedCornerShape(15.dp),
-                backgroundColor = Color.DarkGray,
+                backgroundColor = CardBackground,
                 content = {
-                    Icon(imageVector = Icons.Filled.Add, contentDescription = "", tint = Color.Black)
+                    Row(
+                        verticalAlignment = Alignment.CenterVertically,
+                        modifier = Modifier.padding(12.dp)
+                    ) {
+                        Icon(imageVector = Icons.Filled.Add, contentDescription = "", tint = Color.White)
+                        Text(text = "Add task", color = Color.White)
+                    }
                 }
             )
         },
@@ -68,7 +80,11 @@ fun ListScreen(
                        todoCard(
                            title = task.title,
                            status = task.status,
-                           deleteTask = {}
+                           deleteTask = {listViewModel.deleteTask(task.id)},
+                           editTask = {
+                               listViewModel.appState.currentTask = task
+                               navigateToEditTask()
+                           }
                        )
                    }
                }
@@ -101,13 +117,17 @@ fun todoCard(
     title : String,
     status : Boolean,
     deleteTask: () -> Unit,
+    editTask: () -> Unit,
 ){
 
     val checkedState = remember { mutableStateOf(status)}
 
     Row(modifier = Modifier
         //.border(1.dp, Color.Red)
-        .fillMaxWidth(),
+        .fillMaxWidth()
+        .clickable {
+            editTask()
+        },
         verticalAlignment = Alignment.CenterVertically
     ){
 
@@ -115,7 +135,8 @@ fun todoCard(
             checked = checkedState.value,
             onCheckedChange = { changed ->
                 checkedState.value = changed
-            }
+            },
+            enabled = false
         )
 
 
