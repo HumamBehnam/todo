@@ -12,12 +12,15 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material.AlertDialog
+import androidx.compose.material.Button
 import androidx.compose.material.Checkbox
 import androidx.compose.material.FloatingActionButton
 import androidx.compose.material.Icon
 import androidx.compose.material.IconButton
 import androidx.compose.material.Scaffold
 import androidx.compose.material.Text
+import androidx.compose.material.TextButton
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.runtime.Composable
@@ -121,6 +124,10 @@ fun todoCard(
 ){
 
     val checkedState = remember { mutableStateOf(status)}
+    val openDialog = remember { mutableStateOf(false)  }
+
+
+
 
     Row(modifier = Modifier
         //.border(1.dp, Color.Red)
@@ -150,7 +157,7 @@ fun todoCard(
 
             IconButton(
                 onClick = {
-                    deleteTask()
+                    openDialog.value = true
                 },
 
                 ) {
@@ -161,6 +168,44 @@ fun todoCard(
                 )
 
             }
+
+            if (openDialog.value) {
+
+                AlertDialog(
+                    onDismissRequest = {
+                        // Dismiss the dialog when the user clicks outside the dialog or on the back
+                        // button. If you want to disable that functionality, simply use an empty
+                        // onCloseRequest.
+                        openDialog.value = false
+                    },
+                    title = {
+                        Text(text = "Confirm deletion")
+                    },
+                    text = {
+                        Text("This will permanently delete this task ")
+                    },
+                    confirmButton = {
+                        TextButton(
+
+                            onClick = {
+                                openDialog.value = false
+                                deleteTask()
+                            }) {
+                            Text("Delete task")
+                        }
+                    },
+                    dismissButton = {
+                        TextButton(
+
+                            onClick = {
+                                openDialog.value = false
+                            }) {
+                            Text("Cancel")
+                        }
+                    }
+                )
+            }
+
         }
 
     }

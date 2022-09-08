@@ -137,9 +137,7 @@ fun EditScreen (
             }
         ) {
 
-            var check by remember {
-                mutableStateOf(false)
-            }
+
 
             var titleValue by remember { mutableStateOf(TextFieldValue(task.title)) }
 
@@ -174,6 +172,9 @@ fun EditScreen (
 
 
 
+            var check by remember {
+                mutableStateOf(task.status)
+            }
             Text(
                 "Status",
                 modifier = Modifier.padding(horizontal = HORIZONTAL_PAD)
@@ -185,7 +186,10 @@ fun EditScreen (
             ) {
                 Checkbox(
                     checked = check,
-                    onCheckedChange = {check = it},
+                    onCheckedChange = {
+                        check = it
+                        editViewModel.updateStatus(it)
+                    },
                     modifier = Modifier.padding(horizontal = HORIZONTAL_PAD/2),
 
                     )

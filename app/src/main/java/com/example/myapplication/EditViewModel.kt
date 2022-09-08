@@ -55,6 +55,17 @@ class EditViewModel @Inject constructor(
 
     }
 
+    fun updateStatus(newStatus: Boolean) {
+        val temp = appState.currentTask
+        temp.status = newStatus
+
+        currTask.value = temp
+        appState.currentTask = temp
+
+        println("")
+
+    }
+
     fun resetState() {
         appState.setEmptyState()
         currTask = mutableStateOf(appState.currentTask)
