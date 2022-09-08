@@ -55,5 +55,10 @@ class EditViewModel @Inject constructor(
 
     }
 
+    fun resetState() {
+        appState.setEmptyState()
+        currTask = mutableStateOf(appState.currentTask)
+    }
+
 
 }

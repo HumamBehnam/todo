@@ -2,6 +2,7 @@ package com.example.myapplication
 
 import androidx.compose.animation.ExperimentalAnimationApi
 import androidx.compose.foundation.border
+import androidx.compose.foundation.gestures.detectTapGestures
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
@@ -32,10 +33,13 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.input.pointer.pointerInput
+import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.Placeholder
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.example.myapplication.ui.theme.BackgroundColor
@@ -55,6 +59,8 @@ fun EditScreen (
 
     var text = remember{ mutableStateOf("") }
     val innerPadding = PaddingValues(0.dp)
+    val focusManager = LocalFocusManager.current
+
 
 
     Scaffold(
@@ -87,6 +93,7 @@ fun EditScreen (
                             Text("Cancel", color = Color.White)
                         },
                         onClick = {
+                            editViewModel.resetState()
                             navigateToList()
                         },
                         modifier = Modifier
@@ -97,6 +104,8 @@ fun EditScreen (
                         backgroundColor = CardBackground,
                         onClick = {
                             editViewModel.insertTask(editViewModel.appState.currentTask)
+                            editViewModel.resetState()
+                            navigateToList()
                         },
                         modifier = Modifier
                             .fillMaxWidth(1f)
@@ -118,26 +127,50 @@ fun EditScreen (
 
         val padding = innerPadding
 
-        Column {
+        Column(
+            modifier = Modifier
+                .fillMaxHeight()
+                .pointerInput(Unit) {
+                detectTapGestures(onTap = {
+                    focusManager.clearFocus()
+                })
+            }
+        ) {
 
             var check by remember {
                 mutableStateOf(false)
             }
 
+            var titleValue by remember { mutableStateOf(TextFieldValue(task.title)) }
+
             StyledOutlinedTextField(
                 "Title",
                 "Enter title",
-                content = task.title,
-                editViewModel::updateName
+                content = titleValue,
+                changeText = { value ->
+                    titleValue = value
+                    editViewModel.updateName(value.text)
+                }
             )
 
+            var descriptionValue by remember { mutableStateOf(TextFieldValue(task.description)) }
+
+            StyledOutlinedTextField(
+                "Title",
+                "Enter title",
+                content = descriptionValue,
+                changeText = { value ->
+                    descriptionValue = value
+                    editViewModel.updateDescription(value.text)
+                }
+            )
+            /*
             StyledOutlinedTextField(
                 "Description",
                 "Enter description",
                 content = task.description,
-                editViewModel::updateDescription
-            )
-
+                changeText = editViewModel::updateDescription
+            )*/
 
 
 
@@ -171,8 +204,8 @@ fun EditScreen (
 fun StyledOutlinedTextField(
     title: String,
     placeholder: String,
-    content: String = "",
-    changeText: (String) -> Unit
+    content: TextFieldValue = TextFieldValue(""),
+    changeText: (TextFieldValue) -> Unit
 ) {
 
     
@@ -182,10 +215,10 @@ fun StyledOutlinedTextField(
             modifier = Modifier.padding(horizontal = HORIZONTAL_PAD)
         )
         OutlinedTextField(
-            value = content,
+            value = content.text,
             onValueChange = { newText ->
 
-                changeText(newText)
+                changeText(TextFieldValue(newText))
                             },
             maxLines = 2,
             textStyle = TextStyle(color = Color.Black),
